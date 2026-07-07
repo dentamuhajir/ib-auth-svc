@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  ib-auth-svc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ib-auth-svc
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${SPRING_LOCAL_PORT}:${SPRING_CONTAINER_PORT}"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - ib_network
+
+networks:
+  ib_network:
+    external: true
