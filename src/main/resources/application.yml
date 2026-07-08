@@ -6,7 +6,7 @@ spring:
     name: ib-auth-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/ib_database}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/ib_auth}
     username: ${SPRING_DATASOURCE_USERNAME:ib_user}
     password: ${SPRING_DATASOURCE_PASSWORD:zcbsdbsdgwegwet23}
     driver-class-name: org.postgresql.Driver
