@@ -1,9 +1,12 @@
 package com.bank.auth.controller;
 
 
+import com.bank.auth.dto.request.LoginRequest;
+import com.bank.auth.dto.response.LoginResponse;
 import com.bank.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -16,17 +19,20 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> req) {
+    public LoginResponse login(@RequestBody LoginRequest req) {
+
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        System.out.println(encoder.encode("Password123@"));
 
         String token = authService.login(
-                req.get("username"),
-                req.get("password")
+                req.getUsername(),
+                req.getPassword()
         );
 
-           return Map.of(
-                "accessToken", token,
-                "tokenType", "Bearer"
-        );
+           return LoginResponse.builder()
+                   .accessToken(token)
+                   .tokenType("Bearer")
+                   .build();
     }
 
     @GetMapping("/me")
