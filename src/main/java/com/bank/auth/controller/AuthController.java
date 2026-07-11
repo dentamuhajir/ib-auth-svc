@@ -4,9 +4,8 @@ package com.bank.auth.controller;
 import com.bank.auth.dto.request.LoginRequest;
 import com.bank.auth.dto.response.LoginResponse;
 import com.bank.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,10 +18,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest req) {
-
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
-        System.out.println(encoder.encode("Password123@"));
+    public LoginResponse login(@RequestBody @Valid LoginRequest req) {
 
         String token = authService.login(
                 req.getUsername(),
