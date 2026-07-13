@@ -1,6 +1,8 @@
 package com.bank.auth.controller;
 
 
+import com.bank.auth.common.ApiResponse;
+import com.bank.auth.common.ResponseCode;
 import com.bank.auth.dto.request.LoginRequest;
 import com.bank.auth.dto.response.LoginResponse;
 import com.bank.auth.service.AuthService;
@@ -18,16 +20,23 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody @Valid LoginRequest req) {
+    public ApiResponse<LoginResponse> login(@RequestBody @Valid LoginRequest req) {
 
         String token = authService.login(
                 req.getUsername(),
                 req.getPassword()
         );
 
-           return LoginResponse.builder()
+           LoginResponse loginResponse = LoginResponse.builder()
                    .accessToken(token)
                    .tokenType("Bearer")
+                   .build();
+
+           return ApiResponse.<LoginResponse>builder()
+                   .success(true)
+                   .code(ResponseCode.SUCCESS)
+                   .message("Login successful")
+                   .data(loginResponse)
                    .build();
     }
 
