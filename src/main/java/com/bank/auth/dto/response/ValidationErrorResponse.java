@@ -1,4 +1,4 @@
-package com.bank.auth.exception;
+package com.bank.auth.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
