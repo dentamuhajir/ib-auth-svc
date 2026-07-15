@@ -1,5 +1,7 @@
 package com.bank.auth.exception;
 
+import com.bank.auth.common.ErrorResponse;
+import com.bank.auth.common.ResponseCode;
 import com.bank.auth.dto.response.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationError(
+    public ResponseEntity<ErrorResponse> handleValidationError(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
@@ -29,12 +31,12 @@ public class GlobalExceptionHandler {
                     fieldError.getDefaultMessage()
             );
         }
-        ValidationErrorResponse response = ValidationErrorResponse.builder()
-                .timestamp(Instant.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error("Validation Error")
+
+        ErrorResponse response = ErrorResponse.builder()
+                .success(false)
+                .code(ResponseCode.VALIDATION_ERROR)
+                .message("Validation failed")
                 .errors(errors)
-                .path(request.getRequestURI())
                 .build();
 
         return ResponseEntity.badRequest().body(response);
