@@ -1,10 +1,13 @@
 package com.bank.auth.service;
 
 
+import com.bank.auth.exception.InvalidCredentialException;
+import com.bank.auth.exception.UserNotFoundException;
 import com.bank.auth.security.jwt.JwtService;
 import com.bank.auth.security.userdetails.AppUserDetails;
 import com.bank.auth.security.userdetails.AppUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +21,18 @@ public class AuthService {
 
     public String login(String username, String password) {
 
-        var userDetails = (AppUserDetails)
-                userDetailsService.loadUserByUsername(username);
+        AppUserDetails appUserDetails;
 
-        if (!encoder.matches(password, userDetails.getPassword())) {
-            throw new RuntimeException("INVALID_CREDENTIALS");
+        try {
+            appUserDetails = (AppUserDetails) userDetailsService.loadUserByUsername(username);
+        }  catch (UserNotFoundException e) {
+            throw new InvalidCredentialException();
         }
 
-        return jwtService.generateToken(userDetails);
+        if (!encoder.matches(password, appUserDetails.getPassword())) {
+            throw new InvalidCredentialException();
+        }
+
+        return jwtService.generateToken(appUserDetails);
     }
 }

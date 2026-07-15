@@ -2,6 +2,7 @@ package com.bank.auth.security.userdetails;
 
 
 import com.bank.auth.entity.User;
+import com.bank.auth.exception.UserNotFoundException;
 import com.bank.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -18,9 +19,9 @@ public class AppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User users = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
+        User users = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException());
 
         return new AppUserDetails(
                 users.getId().toString(),

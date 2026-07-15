@@ -2,16 +2,13 @@ package com.bank.auth.exception;
 
 import com.bank.auth.common.ErrorResponse;
 import com.bank.auth.common.ResponseCode;
-import com.bank.auth.dto.response.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +34,20 @@ public class GlobalExceptionHandler {
                 .code(ResponseCode.VALIDATION_ERROR)
                 .message("Validation failed")
                 .errors(errors)
+                .build();
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(
+            BusinessException ex
+    ) {
+
+        ErrorResponse response = ErrorResponse.builder()
+                .success(false)
+                .code(ex.getErrorCode().name())
+                .message(ex.getMessage())
                 .build();
 
         return ResponseEntity.badRequest().body(response);
