@@ -5,34 +5,37 @@ import com.bank.auth.exception.InvalidCredentialException;
 import com.bank.auth.exception.UserNotFoundException;
 import com.bank.auth.security.jwt.JwtService;
 import com.bank.auth.security.userdetails.AppUserDetails;
-import com.bank.auth.security.userdetails.AppUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AppUserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final PasswordEncoder encoder;
 
     public String login(String username, String password) {
-
-        AppUserDetails appUserDetails;
-
         try {
-            appUserDetails = (AppUserDetails) userDetailsService.loadUserByUsername(username);
-        }  catch (UserNotFoundException e) {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            username,
+                            password
+                    )
+            );
+
+           AppUserDetails user =
+                   (AppUserDetails)
+                           authentication.getPrincipal();
+
+           return jwtService.generateToken(user);
+
+        }  catch (BadCredentialsException e) {
             throw new InvalidCredentialException();
         }
-
-        if (!encoder.matches(password, appUserDetails.getPassword())) {
-            throw new InvalidCredentialException();
-        }
-
-        return jwtService.generateToken(appUserDetails);
     }
 }
