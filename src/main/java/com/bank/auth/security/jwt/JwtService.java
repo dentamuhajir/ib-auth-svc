@@ -55,6 +55,14 @@ public class JwtService {
     }
 
     public boolean validate(String token, UserDetails userDetails) {
-        return extractUsername(token).equals(userDetails.getUsername());
+        return extractUsername(token)
+                .equals(userDetails.getUsername())
+                && !isExpired(token);
+    }
+
+    public boolean isExpired(String token) {
+        return parse(token)
+                .getExpiration()
+                .before(new Date());
     }
 }

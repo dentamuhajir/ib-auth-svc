@@ -3,10 +3,13 @@ package com.bank.auth.security.jwt;
 
 import com.bank.auth.security.userdetails.AppUserDetailsService;
 import java.io.IOException;
+
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -32,22 +35,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        String username = jwtService.extractUsername(token);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try {
+            String username = jwtService.extractUsername(token);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            var userDetails = userDetailsService.loadUserByUsername(username);
+                var userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtService.validate(token, userDetails)) {
+                if (jwtService.validate(token, userDetails)) {
 
-                var auth = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
+                    var auth = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                    SecurityContext context =
+                            SecurityContextHolder.createEmptyContext();
+
+                    context.setAuthentication(auth);
+
+                    SecurityContextHolder.setContext(context);
+                }
             }
+            chain.doFilter(request, response);
+        } catch (JwtException ex){
+            chain.doFilter(request, response);
         }
-
-        chain.doFilter(request, response);
     }
 }

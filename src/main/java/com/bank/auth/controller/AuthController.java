@@ -5,9 +5,11 @@ import com.bank.auth.common.ApiResponse;
 import com.bank.auth.common.ResponseCode;
 import com.bank.auth.dto.request.LoginRequest;
 import com.bank.auth.dto.response.LoginResponse;
+import com.bank.auth.security.userdetails.AppUserDetails;
 import com.bank.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -41,7 +43,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public String me() {
-        return "Hello, User!";
+    public String me(@AuthenticationPrincipal AppUserDetails user) {
+        return "Hello, " + user.getUsername();
     }
 }
