@@ -9,6 +9,7 @@ import com.bank.auth.security.userdetails.AppUserDetails;
 import com.bank.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,5 +46,17 @@ public class AuthController {
     @GetMapping("/me")
     public String me(@AuthenticationPrincipal AppUserDetails user) {
         return "Hello, " + user.getUsername();
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/admin")
+    public String Admin(@AuthenticationPrincipal AppUserDetails user) {
+        return "Hello, Admin " + user.getUsername();
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @GetMapping("/customer")
+    public String Customer(@AuthenticationPrincipal AppUserDetails user) {
+        return "Hello, Customer " + user.getUsername();
     }
 }
