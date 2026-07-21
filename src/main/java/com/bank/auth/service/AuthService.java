@@ -1,8 +1,11 @@
 package com.bank.auth.service;
 
 
+import com.bank.auth.dto.response.LoginResponse;
+import com.bank.auth.entity.User;
 import com.bank.auth.exception.InvalidCredentialException;
 import com.bank.auth.exception.UserNotFoundException;
+import com.bank.auth.repository.UserRepository;
 import com.bank.auth.security.jwt.JwtService;
 import com.bank.auth.security.userdetails.AppUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +20,11 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
-    public String login(String username, String password) {
+    public LoginResponse login(String username, String password) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -28,11 +33,23 @@ public class AuthService {
                     )
             );
 
-           AppUserDetails user =
+           AppUserDetails principal =
                    (AppUserDetails)
                            authentication.getPrincipal();
 
-           return jwtService.generateToken(user);
+           User user =
+                    userRepository.findByUsername(
+                            principal.getUsername()
+                    ).orElseThrow(UserNotFoundException::new);
+
+           LoginResponse loginResponse = LoginResponse.builder()
+                   .accessToken(jwtService.generateToken(principal))
+                   .tokenType("Bearer")
+                   .expiresIn(jwtService.getExpiration())
+                   .refreshToken(refreshTokenService.create(user))
+                   .build();
+
+           return loginResponse;
 
         }  catch (BadCredentialsException e) {
             throw new InvalidCredentialException();

@@ -25,15 +25,10 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@RequestBody @Valid LoginRequest req) {
 
-        String token = authService.login(
+        LoginResponse loginResponse = authService.login(
                 req.getUsername(),
                 req.getPassword()
         );
-
-           LoginResponse loginResponse = LoginResponse.builder()
-                   .accessToken(token)
-                   .tokenType("Bearer")
-                   .build();
 
            return ApiResponse.<LoginResponse>builder()
                    .success(true)
