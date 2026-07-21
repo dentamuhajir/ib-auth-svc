@@ -60,6 +60,10 @@ public class JwtService {
                 && !isExpired(token);
     }
 
+    public Long getExpiration() {
+        return ttl/1000;
+    }
+
     public boolean isExpired(String token) {
         return parse(token)
                 .getExpiration()
