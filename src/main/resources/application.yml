@@ -28,3 +28,4 @@ spring:
   jwt:
     secret-key: ${JWT_SECRET:MzY0YmY4N2Y1M2NlYmI2ODVjM2E1YmU3MGY5YzM0YmI5MTY2YThmYmY0ZTI3M2M1YmVkYmE4ZGNlMmU3YmI2Zg==}
     ttl-ms: ${JWT_TTL:3600000} # 1 hour
+    refresh-ttl-ms: ${JWT_REFRESH_TTL:604800000} # 7 days
