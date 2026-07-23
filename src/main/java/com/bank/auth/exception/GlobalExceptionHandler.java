@@ -44,12 +44,14 @@ public class GlobalExceptionHandler {
             BusinessException ex
     ) {
 
+        ErrorCode errorCode = ex.getErrorCode();
+
         ErrorResponse response = ErrorResponse.builder()
                 .success(false)
                 .code(ex.getErrorCode().name())
                 .message(ex.getMessage())
                 .build();
 
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
     }
 }
