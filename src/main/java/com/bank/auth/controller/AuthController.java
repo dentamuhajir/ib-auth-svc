@@ -4,7 +4,9 @@ package com.bank.auth.controller;
 import com.bank.auth.common.ApiResponse;
 import com.bank.auth.common.ResponseCode;
 import com.bank.auth.dto.request.LoginRequest;
+import com.bank.auth.dto.request.RegisterRequest;
 import com.bank.auth.dto.response.LoginResponse;
+import com.bank.auth.dto.response.RegisterResponse;
 import com.bank.auth.security.userdetails.AppUserDetails;
 import com.bank.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -36,6 +38,19 @@ public class AuthController {
                    .message("Login successful")
                    .data(loginResponse)
                    .build();
+    }
+
+    @PostMapping("/register")
+    public ApiResponse<RegisterResponse> register(@RequestBody @Valid RegisterRequest request) {
+
+        RegisterResponse registerResponse = authService.register(request);
+
+        return ApiResponse.<RegisterResponse>builder()
+                .success(true)
+                .code(ResponseCode.SUCCESS)
+                .message("User registered successfully")
+                .data(registerResponse)
+                .build();
     }
 
     @GetMapping("/me")
