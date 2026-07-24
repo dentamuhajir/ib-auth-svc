@@ -13,7 +13,9 @@ public enum ErrorCode {
     ACCOUNT_LOCKED("IB-403-01", "Account is locked due to multiple failed attempts", HttpStatus.FORBIDDEN),
     USER_NOT_FOUND("IB-404-01", "User not found", HttpStatus.NOT_FOUND),
     USER_ALREADY_EXISTS("IB-409-01", "User already exists", HttpStatus.CONFLICT),
+    EMAIL_ALREADY_EXISTS("IB-409-02", "Email already exists", HttpStatus.CONFLICT),
     INTERNAL_SERVER_ERROR("IB-500-00", "An internal system error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+
 
     private final String code;
     private final String defaultMessage;
